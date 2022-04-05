@@ -39,8 +39,8 @@ class CryptoControllerTest {
 
     private List<Currency> getCryptoCurrencyList() {
         return Arrays.asList(
-                new Currency("id1","Name1"),
-                new Currency("id2","Name2")
+                new Currency("ABC","AB-Chain","AB-Chain (ABC)"),
+                new Currency("ABC1","AB-Chain1","AB-Chain (ABC)1")
         );
     }
 }
