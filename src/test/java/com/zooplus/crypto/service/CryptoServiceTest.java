@@ -1,6 +1,7 @@
 package com.zooplus.crypto.service;
 
 import com.zooplus.crypto.client.CryptoClient;
+import com.zooplus.crypto.client.LocationClient;
 import com.zooplus.crypto.model.Currency;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +22,12 @@ class CryptoServiceTest {
     @Mock
     private CryptoClient cryptoClient;
 
+    @Mock
+    private LocationService locationService;
+
     @BeforeEach
     void setup(){
-        this.cryptoService = new CryptoService(cryptoClient);
+        this.cryptoService = new CryptoService(cryptoClient,locationService);
     }
 
     @Test

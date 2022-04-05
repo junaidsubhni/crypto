@@ -3,6 +3,8 @@ package com.zooplus.crypto.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.zooplus.crypto.exception.CoinApiException;
+import com.zooplus.crypto.model.ConversionRate;
 import com.zooplus.crypto.model.Currencies;
 import com.zooplus.crypto.model.Currency;
 import okhttp3.*;
@@ -60,7 +62,37 @@ public class CryptoClient {
             return new ArrayList<>(currenciesResponse.getCrypto().values());
         } catch (IOException e) {
             log.error("Error in fetching Currencies", e);
-            return new ArrayList<>();
+            throw new CoinApiException("Error in fetching Currencies");
+        }
+    }
+
+    public Double fetchCryptoConversionRates(String currency, String targetCurrencyCode) {
+
+        URL url = new HttpUrl.Builder()
+                .host(HttpUrl.parse(currencyListUrl).host())
+                .scheme(HttpUrl.parse(currencyListUrl).scheme())
+                .port(HttpUrl.parse(currencyListUrl).port())
+                .addQueryParameter("access_key", currencyAPIKey)
+                .addQueryParameter("target", targetCurrencyCode)
+                .addQueryParameter("symbols", currency)
+                .addPathSegment("api")
+                .addPathSegment("live")
+                .build().url();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Call call = client.newCall(request);
+        try {
+            Response response = call.execute();
+            String responseBody = Objects.requireNonNull(response.body()).string();
+            ConversionRate conversionRate = new ObjectMapper().readValue(responseBody, new TypeReference<>(){
+            });
+            return conversionRate.getRates().get(currency);
+        } catch (IOException e) {
+            log.error("Error in fetching Conversion  Rates", e);
+            throw new CoinApiException("Error in fetching Conversion  Rates");
         }
     }
 }

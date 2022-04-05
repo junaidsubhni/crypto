@@ -1,5 +1,6 @@
 package com.zooplus.crypto.controller;
 
+import com.zooplus.crypto.model.ConversionResponse;
 import com.zooplus.crypto.model.Currency;
 import com.zooplus.crypto.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ public class CryptoController {
     @GetMapping(value = "/list")
     public List<Currency> listCryptoCurrencies() {
         return cryptoService.cryptoCurrencyList();
+    }
+
+    @GetMapping("/conversion")
+    public ConversionResponse conversion(@RequestParam String ipAddress, @RequestParam String currency) {
+        return cryptoService.convert(ipAddress, currency);
     }
 
 }
