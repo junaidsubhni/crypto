@@ -2,7 +2,7 @@ package com.zooplus.crypto.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zooplus.crypto.exception.CoinApiException;
+import com.zooplus.crypto.exception.LocationApiException;
 import com.zooplus.crypto.model.IPLocation;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -48,12 +48,22 @@ public class LocationClient {
         try {
             Response response = call.execute();
             String responseBody = Objects.requireNonNull(response.body()).string();
-            IPLocation iPLocation = new ObjectMapper().readValue(responseBody, new TypeReference<>(){
-            });
+            IPLocation iPLocation = new ObjectMapper().readValue(responseBody, new TypeReference<>(){});
+            checkApiStatus(iPLocation);
             return iPLocation;
         } catch (IOException e) {
             log.error("Error in fetching IP Location", e);
-            throw new CoinApiException("Error in fetching IP Location");
+            throw new LocationApiException("Error in fetching IP Location");
         }
+    }
+
+    private void checkApiStatus(IPLocation iPLocation) {
+        if (iPLocation.getStatus().equals("fail")) {
+            throw new LocationApiException("Location API Exception");
+        }
+    }
+
+    public void setIpLocationApiUrl(String ipLocationApiUrl) {
+        this.ipLocationApiUrl = ipLocationApiUrl;
     }
 }

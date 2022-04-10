@@ -1,5 +1,6 @@
 package com.zooplus.crypto.controller;
 
+import com.zooplus.crypto.model.ConversionResponse;
 import com.zooplus.crypto.model.Currency;
 import com.zooplus.crypto.service.CryptoService;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -31,9 +33,19 @@ class CryptoControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnAllCurrencies() throws Exception{
+    void testCryptoCurrencyListApi() throws Exception{
         when(cryptoService.cryptoCurrencyList()).thenReturn(getCryptoCurrencyList());
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/crypto/list").contentType(MediaType.APPLICATION_JSON)).andReturn();
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/crypto/list").contentType(MediaType.APPLICATION_JSON)).andReturn();
+        assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void testCryptoConversionApi() throws Exception{
+        when(cryptoService.convert(any(),any())).thenReturn(getConversionResponse());
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/crypto/conversion?ipAddress=ipAddress&currency=cryptocurrency")
+                .contentType(MediaType.APPLICATION_JSON)).andReturn();
         assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
     }
 
@@ -42,6 +54,12 @@ class CryptoControllerTest {
                 new Currency("ABC","AB-Chain","AB-Chain (ABC)"),
                 new Currency("ABC1","AB-Chain1","AB-Chain (ABC)1")
         );
+    }
+
+    private ConversionResponse getConversionResponse(){
+        ConversionResponse conversionResponse = new ConversionResponse();
+        conversionResponse.setConversionRate("$100");
+        return conversionResponse;
     }
 }
 
